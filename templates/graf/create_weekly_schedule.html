@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Создать еженедельное расписание для {{ user.username }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Создать еженедельное расписание для {{ user.username }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>День недели</th>
+                    <th>Адрес</th>
+                    <th>Дата</th>
+                    <th>Начало работы</th>
+                    <th>Конец работы</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                <tr>
+                    <td>{{ form.instance.get_day_display }}</td>
+                    <td>{{ form.address }}</td>
+                    <td>{{ form.date }}</td>
+                    <td>{{ form.start_time }}</td>
+                    <td>{{ form.end_time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

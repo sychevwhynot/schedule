@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Расписание{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex">
+        <div class="flex-grow-1 pr-4">
+            <h2>Расписание по адресам</h2>
+            <p><strong>Текущая неделя:</strong> {{ interval_dates }}</p>
+            <div class="mt-3">
+                <a href="?start_date={{ prev_week_start|date:'Y-m-d' }}&end_date={{ prev_week_end|date:'Y-m-d' }}" class="btn btn-primary mr-2">Предыдущая неделя</a>
+                <a href="?start_date={{ next_week_start|date:'Y-m-d' }}&end_date={{ next_week_end|date:'Y-m-d' }}" class="btn btn-primary">Следующая неделя</a>
+            </div>
+            <div id="schedule-tables" class="mt-4">
+                <!-- Таблицы будут добавляться динамически -->
+            </div>
+        </div>
+        <div class="ml-auto" style="width: 50%;">
+            <h4>Список пользователей и часов на неделе</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Часы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user, hours in users_hours.items %}
+                        <tr>
+                            <td>{{ user }}</td>
+                            <td>{{ hours }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #f87080;
+        border-color: #f87080;
+    }
+
+    .btn-primary:hover {
+        background-color: #f87080;
+        border-color: #f87080;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+    }
+
+    .table tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.075);
+    }
+
+    /* Обеспечение записи времени в одну строку */
+    .table td {
+        white-space: nowrap;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Получаем JSON данные из шаблона
+    var schedulesData = JSON.parse('{{ schedules_json|escapejs }}');
+
+    var scheduleTablesDiv = document.getElementById('schedule-tables');
+
+    // Перебираем каждый этаж и его пользователей
+    Object.entries(schedulesData).forEach(([floor, users]) => {
+        // Заголовок для этажа
+        var floorHeading = document.createElement('h3');
+        floorHeading.textContent = floor;
+        scheduleTablesDiv.appendChild(floorHeading);
+
+        // Таблица для пользователей этажа
+        var table = document.createElement('table');
+        table.classList.add('table', 'table-bordered', 'mt-3');
+
+        // Заголовок таблицы
+        var thead = document.createElement('thead');
+        var headRow = document.createElement('tr');
+        ['Пользователь', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'].forEach(day => {
+            var th = document.createElement('th');
+            th.textContent = day;
+            headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        // Тело таблицы
+        var tbody = document.createElement('tbody');
+        Object.entries(users).forEach(([user, schedule]) => {
+            var row = document.createElement('tr');
+            var userCell = document.createElement('td');
+            userCell.textContent = user;
+            row.appendChild(userCell);
+
+            ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].forEach(day => {
+                var dayCell = document.createElement('td');
+                if (schedule[day]) {
+                    dayCell.textContent = `${schedule[day].start_time} - ${schedule[day].end_time}`;
+                } else {
+                    dayCell.textContent = '-';
+                }
+                row.appendChild(dayCell);
+            });
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        // Добавляем таблицу в div
+        scheduleTablesDiv.appendChild(table);
+    });
+});
+</script>
+{% endblock %}
