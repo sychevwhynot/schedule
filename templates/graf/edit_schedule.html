@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Редактирование расписания
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Редактирование расписания</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        <a href="{% url 'graf:profile_detail' schedule.user.id %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

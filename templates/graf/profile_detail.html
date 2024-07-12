@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Профиль пользователя {{ user.username }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #f87080;
+        border-color: #f87080;
+        color: white;
+    }
+    .btn-custom:hover {
+        background-color: #f6596a;
+        border-color: #f6596a;
+        color: white;
+    }
+</style>
+<div class="container mt-4">
+    <h2>Профиль пользователя {{ user.last_name }} {{ user.first_name }} {{ user.superlast_name }}</h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'graf:create_weekly_schedule' user.id %}" class="btn btn-custom">Создать расписание</a>
+    </div>
+
+    <div class="mb-3">
+        <a href="{% url 'graf:profile_detail' user.id %}?start_date={{ prev_week_start|date:'Y-m-d' }}&end_date={{ prev_week_end|date:'Y-m-d' }}" class="btn btn-custom">Предыдущая неделя</a>
+        <a href="{% url 'graf:profile_detail' user.id %}?start_date={{ next_week_start|date:'Y-m-d' }}&end_date={{ next_week_end|date:'Y-m-d' }}" class="btn btn-custom">Следующая неделя</a>
+    </div>
+
+    <h3>Общее количество часов на текущую неделю: {{ total_hours }}</h3>
+
+    <h3>Расписание пользователя</h3>
+
+    {% if schedules %}
+    <p>Неделя с {{ start_of_week|date:"d.m.Y" }} по {{ end_of_week|date:"d.m.Y" }}</p>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Адрес</th>
+                <th>Дата</th>
+                <th>День недели</th>
+                <th>Начало работы</th>
+                <th>Конец работы</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.address }}</td>
+                <td>{{ schedule.date|date:"j F Y" }}</td>
+                <td>{{ schedule.date|date:"l" }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>
+                    <a href="{% url 'graf:edit_schedule' schedule.pk %}" class="btn btn-warning btn-sm">Редактировать</a>
+                    <a href="{% url 'graf:delete_schedule' schedule.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>У этого пользователя пока нет расписания.</p>
+    {% endif %}
+</div>
+{% endblock %}

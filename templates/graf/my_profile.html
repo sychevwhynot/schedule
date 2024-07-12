@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Мой профиль
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Мой профиль</h2>
+    <p><strong>Текущая неделя:</strong> {{ interval_dates }}</p>
+    <h3>Общее количество часов на текущую неделю: {{ total_hours }}</h3>
+
+    <div class="mb-3">
+        <a href="?start_date={{ prev_week_start|date:'Y-m-d' }}&end_date={{ prev_week_end|date:'Y-m-d' }}" class="btn btn-secondary" style="background-color: #f87080;">Прошлая неделя</a>
+        <a href="?start_date={{ next_week_start|date:'Y-m-d' }}&end_date={{ next_week_end|date:'Y-m-d' }}" class="btn btn-secondary" style="background-color: #f87080;">Следующая неделя</a>
+    </div>
+
+    <h3>Расписание пользователя</h3>
+
+    {% if schedules %}
+    <p>Неделя с {{ start_of_week|date:"d.m.Y" }} по {{ end_of_week|date:"d.m.Y" }}</p>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Адрес</th>
+                <th>Дата</th>
+                <th>День недели</th>
+                <th>Начало работы</th>
+                <th>Конец работы</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.address }}</td>
+                <td>{{ schedule.date|date:"d.m.Y" }}</td>
+                <td>{{ schedule.date|date:"l" }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>У вас пока нет расписания.</p>
+    {% endif %}
+</div>
+{% endblock %}

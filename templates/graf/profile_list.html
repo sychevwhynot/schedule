@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Список сотрудников{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Список сотрудников</h2>
+    
+    <input type="text" id="search" class="form-control mb-3" placeholder="Поиск по имени, фамилии или email">
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+            </tr>
+        </thead>
+        <tbody id="profile-list">
+            {% for user in users %}
+            <tr>
+                <td>{{ user.last_name }} {{ user.first_name }} {{ user.superlast_name }}</td>
+                <td><a href="{% url 'graf:profile_detail' user.id %}" class="btn btn-primary" style="background-color: #f87080;">Профиль</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #f87080;
+        border-color: #f87080;
+    }
+
+    .btn-primary:hover {
+        background-color: #e8586d;
+        border-color: #e8586d;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search');
+        const profileList = document.getElementById('profile-list');
+        const rows = profileList.getElementsByTagName('tr');
+
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                        match = true;
+                        break;
+                    }
+                }
+
+                row.style.display = match ? '' : 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
